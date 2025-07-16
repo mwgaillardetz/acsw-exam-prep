@@ -1,8 +1,8 @@
 ---
 services:
-  terraform-exam:
+  lcsw-exam:
     build: .
-    container_name: terraform-practice-exam
+    container_name: lcsw-exam
     ports:
       - "4881:80"
     restart: unless-stopped
