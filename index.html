@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>LCSW Practice Platform</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Theme Toggle -->
+        <div class="theme-toggle-container">
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                <span class="theme-icon">🌙</span>
+            </button>
+        </div>
+
+        <!-- Welcome Screen -->
+        <div class="screen active" id="welcome-screen">
+            <div class="welcome-content">
+                <h1>LCSW Practice Platform</h1>
+                <p class="subtitle">Master the Licensed Clinical Social Worker Exam</p>
+
+                <div class="mode-selection">
+                    <div class="mode-card" onclick="showStudyGuide()">
+                        <div class="mode-icon">🧠</div>
+                        <h3>Study Guide</h3>
+                        <p>Interactive study materials organized by exam domains</p>
+                        <ul>
+                            <li>4 Core Domains Covered</li>
+                            <li>Detailed Explanations</li>
+                            <li>Real-world Examples</li>
+                        </ul>
+                    </div>
+
+                    <div class="mode-card" onclick="showExamOptions()">
+                        <div class="mode-icon">💼</div>
+                        <h3>Practice Exams</h3>
+                        <p>Test your knowledge with comprehensive practice questions</p>
+                        <ul>
+                            <li>Full Practice Exam (170 questions, 4 hours)</li>
+                            <li>Domain-based Exams (Untimed study mode)</li>
+                            <li>Performance Analytics</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Study Guide Screen -->
+        <div class="screen" id="study-guide-screen">
+            <div class="study-header">
+                <button class="btn-back" onclick="goHome()">← Back to Home</button>
+                <h1>LCSW Study Guide</h1>
+                <p>Comprehensive study materials for all 4 exam domains</p>
+            </div>
+
+            <div class="objectives-grid" id="objectives-grid">
+                <!-- Domains will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Domain Detail Screen -->
+        <div class="screen" id="objective-detail-screen">
+            <div class="objective-header">
+                <button class="btn-back" onclick="showStudyGuide()">← Back to Study Guide</button>
+                <div class="objective-title" id="objective-title"></div>
+                <div class="objective-description" id="objective-description"></div>
+            </div>
+
+            <div class="objective-content" id="objective-content">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+
+            <div class="objective-actions">
+                <button class="btn-secondary" onclick="startObjectiveExam()">Practice Questions for This Domain</button>
+            </div>
+        </div>
+
+        <!-- Exam Options Screen -->
+        <div class="screen" id="exam-options-screen">
+            <div class="exam-options-header">
+                <button class="btn-back" onclick="goHome()">← Back to Home</button>
+                <h1>Practice Exam Options</h1>
+                <p>Choose your preferred exam format</p>
+            </div>
+
+            <div class="exam-types">
+                <div class="exam-type-card" onclick="startFullExam()">
+                    <div class="exam-icon">🎓</div>
+                    <h3>Full Practice Exam</h3>
+                    <p>170 questions covering all domains - matches real exam format</p>
+                    <div class="exam-details">
+                        <span>4 hours</span>
+                        <span>Complete performance analysis</span>
+                        <span>Real exam simulation</span>
+                    </div>
+                </div>
+
+                <div class="exam-type-card" onclick="showCategoryExams()">
+                    <div class="exam-icon">🔍</div>
+                    <h3>Domain-based Exams</h3>
+                    <p>Focus on specific exam domains - untimed study mode</p>
+                    <div class="exam-details">
+                        <span>No time limit</span>
+                        <span>Targeted practice</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Exams Screen -->
+        <div class="screen" id="category-exams-screen">
+            <div class="category-header">
+                <button class="btn-back" onclick="showExamOptions()">← Back to Exam Options</button>
+                <h1>Domain-based Practice Exams</h1>
+                <p>Select a domain to practice specific topics</p>
+            </div>
+
+            <div class="category-grid" id="category-grid">
+                <!-- Categories will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Exam Screen -->
+        <div class="screen" id="exam-screen">
+            <div class="exam-header">
+                <button class="btn-back" onclick="exitExam()">← Exit Exam</button>
+                <div class="exam-progress">
+                    <div class="progress-info">
+                        <span id="questionCounter">Question 1 of 170</span>
+                        <span id="timer">240:00</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-container">
+                <div class="question-header">
+                    <div class="question-meta">
+                        <span class="difficulty-badge" id="difficultyBadge">Medium</span>
+                        <span class="objective-badge" id="objectiveBadge">Domain 1</span>
+                    </div>
+                </div>
+
+                <div class="question-content">
+                    <h2 id="questionText">Question will appear here</h2>
+                    <div class="code-block" id="codeBlock" style="display: none;">
+                        <pre><code id="codeContent"></code></pre>
+                    </div>
+                </div>
+
+                <div class="options-container" id="optionsContainer">
+                    <!-- Options will be populated by JavaScript -->
+                </div>
+
+                <div class="question-actions">
+                    <button class="btn-secondary" onclick="previousQuestion()">← Previous</button>
+                    <button class="btn-primary" onclick="nextQuestion()">Next →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div class="screen" id="results-screen">
+            <div class="results-header">
+                <h1>Exam Complete!</h1>
+                <div class="score-display">
+                    <div class="score-circle">
+                        <span class="score-percentage" id="scorePercentage">0%</span>
+                        <span class="score-text">Score</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-content">
+                <div class="results-summary">
+                    <div class="summary-card">
+                        <h3>Overall Performance</h3>
+                        <div class="performance-stats" id="performanceStats">
+                            <!-- Stats will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <div class="summary-card">
+                        <h3>Performance by Domain</h3>
+                        <div class="objective-breakdown" id="objectiveBreakdown">
+                            <!-- Breakdown will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="results-actions">
+                    <button class="btn-primary" onclick="reviewAnswers()">Review Answers</button>
+                    <button class="btn-secondary" onclick="startNewExam()">Take Another Exam</button>
+                    <button class="btn-secondary" onclick="goHome()">Back to Home</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Review Screen -->
+        <div class="screen" id="review-screen">
+            <div class="review-header">
+                <button class="btn-back" onclick="showResults()">← Back to Results</button>
+                <h1>Answer Review</h1>
+                <div class="review-navigation">
+                    <button class="btn-nav" onclick="previousReviewQuestion()">← Previous</button>
+                    <span id="reviewCounter">Question 1 of 170</span>
+                    <button class="btn-nav" onclick="nextReviewQuestion()">Next →</button>
+                </div>
+            </div>
+
+            <div class="review-content">
+                <div class="review-question">
+                    <div class="question-meta">
+                        <span class="difficulty-badge" id="reviewDifficultyBadge">Medium</span>
+                        <span class="objective-badge" id="reviewObjectiveBadge">Domain 1</span>
+                        <span class="result-badge" id="resultBadge">Correct</span>
+                    </div>
+
+                    <h2 id="reviewQuestionText">Question will appear here</h2>
+                    <div class="code-block" id="reviewCodeBlock" style="display: none;">
+                        <pre><code id="reviewCodeContent"></code></pre>
+                    </div>
+
+                    <div class="answer-comparison">
+                        <div class="answer-section">
+                            <h4>Your Answer:</h4>
+                            <div class="answer-option user-answer" id="userAnswer">Option A</div>
+                        </div>
+
+                        <div class="answer-section">
+                            <h4>Correct Answer:</h4>
+                            <div class="answer-option correct-answer" id="correctAnswer">Option B</div>
+                        </div>
+                    </div>
+
+                    <div class="explanation-section">
+                        <h4>Explanation:</h4>
+                        <p id="answerExplanation">Detailed explanation will appear here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="questions.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
