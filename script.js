@@ -242,6 +242,9 @@ class LCSWExamPlatform {
 
     startExam() {
         this.showScreen('exam-screen');
+        
+        // Show cycling message
+        this.showCyclingMessage();
 
         const timerElement = document.getElementById('timer');
         if (this.timeRemaining > 0) {
@@ -251,7 +254,11 @@ class LCSWExamPlatform {
             timerElement.style.display = 'none';
         }
 
-        this.displayQuestion();
+        // Delay question display to show cycling message
+        setTimeout(() => {
+            this.hideCyclingMessage();
+            this.displayQuestion();
+        }, 1500);
     }
 
     startTimer() {
@@ -566,6 +573,44 @@ class LCSWExamPlatform {
         const explanationDiv = document.getElementById('instantExplanation');
         if (explanationDiv) {
             explanationDiv.style.display = 'none';
+        }
+    }
+    
+    showCyclingMessage() {
+        let messageDiv = document.getElementById('cyclingMessage');
+        if (!messageDiv) {
+            messageDiv = document.createElement('div');
+            messageDiv.id = 'cyclingMessage';
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: var(--bg-card);
+                border: 1px solid var(--border-color);
+                border-radius: 12px;
+                padding: 2rem;
+                text-align: center;
+                z-index: 1000;
+                box-shadow: 0 8px 25px var(--shadow);
+                color: var(--text-primary);
+            `;
+            document.body.appendChild(messageDiv);
+        }
+        
+        messageDiv.innerHTML = `
+            <div style="font-size: 1.5rem; margin-bottom: 1rem;">🔄</div>
+            <div style="font-weight: 600; margin-bottom: 0.5rem;">Preparing Your Exam</div>
+            <div style="color: var(--text-secondary);">Questions are being randomized...</div>
+        `;
+        
+        messageDiv.style.display = 'block';
+    }
+    
+    hideCyclingMessage() {
+        const messageDiv = document.getElementById('cyclingMessage');
+        if (messageDiv) {
+            messageDiv.style.display = 'none';
         }
     }
 
