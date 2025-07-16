@@ -381,10 +381,84 @@ class LCSWExamPlatform {
     }
 
     exitExam() {
-        if (confirm('Are you sure you want to exit the exam? Your progress will be lost.')) {
-            this.resetExam();
-            this.goHome();
+        this.showExitConfirmModal();
+    }
+    
+    showExitConfirmModal() {
+        let modal = document.getElementById('exitConfirmModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'exitConfirmModal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 2000;
+                padding: 20px;
+                box-sizing: border-box;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: var(--bg-card);
+                    border: 1px solid var(--border-color);
+                    border-radius: 12px;
+                    padding: 2rem;
+                    max-width: 400px;
+                    width: 100%;
+                    text-align: center;
+                    box-shadow: 0 8px 25px var(--shadow);
+                ">
+                    <h3 style="color: var(--text-primary); margin-bottom: 1rem;">Exit Exam?</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 2rem;">Are you sure you want to exit? Your progress will be lost.</p>
+                    <div style="display: flex; gap: 1rem; justify-content: center;">
+                        <button onclick="platform.confirmExitExam()" style="
+                            background: var(--error);
+                            color: white;
+                            border: none;
+                            padding: 0.75rem 1.5rem;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            font-weight: 500;
+                            min-height: 44px;
+                        ">Exit</button>
+                        <button onclick="platform.hideExitConfirmModal()" style="
+                            background: var(--bg-card-elevated);
+                            color: var(--text-primary);
+                            border: 1px solid var(--border-color);
+                            padding: 0.75rem 1.5rem;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            font-weight: 500;
+                            min-height: 44px;
+                        ">Cancel</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
         }
+        
+        modal.style.display = 'flex';
+    }
+    
+    hideExitConfirmModal() {
+        const modal = document.getElementById('exitConfirmModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+    
+    confirmExitExam() {
+        this.hideExitConfirmModal();
+        this.resetExam();
+        this.goHome();
     }
 
     finishExam() {
@@ -545,6 +619,7 @@ class LCSWExamPlatform {
         this.timeRemaining = 0;
         this.results = null;
         this.hideInstantExplanation();
+        this.hideCyclingMessage();
     }
 
     showInstantExplanation(question, isCorrect) {
