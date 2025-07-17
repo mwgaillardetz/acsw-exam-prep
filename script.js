@@ -52,6 +52,14 @@ class LCSWExamPlatform {
 
     // Navigation methods
     showScreen(screenId) {
+        // Clean up keyboard navigation when leaving objective detail screen
+        if (this.currentScreen === 'objective-detail-screen' && screenId !== 'objective-detail-screen') {
+            if (this.keyboardHandler) {
+                document.removeEventListener('keydown', this.keyboardHandler);
+                this.keyboardHandler = null;
+            }
+        }
+
         document.querySelectorAll('.screen').forEach(screen => {
             screen.classList.remove('active');
         });
@@ -129,7 +137,83 @@ class LCSWExamPlatform {
             content.appendChild(section);
         });
 
+        // Update domain navigation
+        this.updateDomainNavigation();
+
+        // Add keyboard navigation
+        this.setupKeyboardNavigation();
+
         this.showScreen('objective-detail-screen');
+    }
+
+    // Setup keyboard navigation for domain navigation
+    setupKeyboardNavigation() {
+        // Remove existing event listener if it exists
+        if (this.keyboardHandler) {
+            document.removeEventListener('keydown', this.keyboardHandler);
+        }
+
+        this.keyboardHandler = (event) => {
+            // Only handle navigation when in objective detail screen
+            if (this.currentScreen !== 'objective-detail-screen') return;
+
+            switch(event.key) {
+                case 'ArrowLeft':
+                    event.preventDefault();
+                    this.navigateToPreviousDomain();
+                    break;
+                case 'ArrowRight':
+                    event.preventDefault();
+                    this.navigateToNextDomain();
+                    break;
+                case 'Escape':
+                    event.preventDefault();
+                    this.showStudyGuide();
+                    break;
+            }
+        };
+
+        document.addEventListener('keydown', this.keyboardHandler);
+    }
+
+    // Domain Navigation methods
+    updateDomainNavigation() {
+        const totalDomains = Object.keys(studyGuide).length;
+        const currentDomain = this.currentObjective;
+        
+        // Update domain indicator
+        document.getElementById('domain-indicator').textContent = `Domain ${currentDomain} of ${totalDomains}`;
+        
+        // Update navigation buttons
+        const prevBtn = document.getElementById('prev-domain-btn');
+        const nextBtn = document.getElementById('next-domain-btn');
+        
+        // Enable/disable previous button
+        if (currentDomain <= 1) {
+            prevBtn.disabled = true;
+        } else {
+            prevBtn.disabled = false;
+        }
+        
+        // Enable/disable next button
+        if (currentDomain >= totalDomains) {
+            nextBtn.disabled = true;
+        } else {
+            nextBtn.disabled = false;
+        }
+    }
+
+    navigateToPreviousDomain() {
+        if (this.currentObjective > 1) {
+            this.showObjectiveDetail(this.currentObjective - 1);
+        }
+    }
+
+    navigateToNextDomain() {
+        const totalDomains = Object.keys(studyGuide).length;
+        if (this.currentObjective < totalDomains) {
+            this.showObjectiveDetail(this.currentObjective + 1);
+        }
     }
 
     // Category Exams methods

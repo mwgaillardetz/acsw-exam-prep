@@ -657,24 +657,44 @@ const studyGuide = {
         title: "Human Development, Diversity, and Behavior in the Environment",
         content: [
             {
-                topic: "Human Development Theories",
-                details: "Understanding major developmental theories including Erikson's psychosocial stages, Piaget's cognitive development, attachment theory, and lifespan development. These theories help social workers understand normal development patterns and identify areas of concern."
+                topic: "Erikson's Psychosocial Development Theory",
+                details: "Eight stages of psychosocial development from infancy to late adulthood. Each stage presents a crisis that must be resolved: Trust vs. Mistrust (infancy), Autonomy vs. Shame (early childhood), Initiative vs. Guilt (preschool), Industry vs. Inferiority (school age), Identity vs. Role Confusion (adolescence), Intimacy vs. Isolation (young adulthood), Generativity vs. Stagnation (middle adulthood), Integrity vs. Despair (late adulthood). Understanding these stages helps assess developmental challenges and strengths."
             },
             {
-                topic: "Diversity and Cultural Competence",
-                details: "Developing cultural awareness, knowledge, and skills to work effectively with diverse populations. This includes understanding intersectionality, oppression, privilege, and the impact of culture on behavior and help-seeking patterns."
+                topic: "Piaget's Cognitive Development Theory",
+                details: "Four stages of cognitive development: Sensorimotor (0-2 years) - learning through senses and motor activity; Preoperational (2-7 years) - symbolic thinking but limited logic; Concrete Operational (7-11 years) - logical thinking about concrete objects; Formal Operational (11+ years) - abstract thinking and hypothetical reasoning. Key concepts include assimilation, accommodation, and equilibration."
             },
             {
-                topic: "Systems Theory and Ecological Perspective",
-                details: "Understanding how individuals interact with various systems (family, community, society) and how these interactions affect behavior and well-being. Bronfenbrenner's ecological systems theory provides a framework for assessment and intervention."
+                topic: "Attachment Theory (Bowlby & Ainsworth)",
+                details: "Four attachment styles: Secure (60-65%) - comfortable with intimacy and autonomy; Anxious-Preoccupied (15-20%) - seeks high intimacy but worries about relationships; Dismissive-Avoidant (20-25%) - desires independence over intimacy; Disorganized (5-10%) - inconsistent attachment behaviors. Early attachment patterns influence adult relationships and parenting styles."
             },
             {
-                topic: "Trauma and Resilience",
-                details: "Understanding the impact of trauma on development and functioning, as well as protective factors that promote resilience. This includes knowledge of trauma-informed care principles and evidence-based trauma treatments."
+                topic: "Bronfenbrenner's Ecological Systems Theory",
+                details: "Five environmental systems: Microsystem (immediate environment - family, school), Mesosystem (connections between microsystems), Exosystem (external environments that indirectly affect the person), Macrosystem (cultural context), Chronosystem (changes over time). This framework helps assess person-in-environment interactions and plan interventions at multiple system levels."
             },
             {
-                topic: "Social Justice and Advocacy",
-                details: "Understanding systemic oppression, social justice principles, and the role of advocacy in social work practice. This includes addressing discrimination, promoting equity, and working for social change."
+                topic: "Cultural Competence and Intersectionality",
+                details: "Cultural competence involves cultural awareness (understanding one's own biases), cultural knowledge (learning about different cultures), cross-cultural skills (effective communication across cultures), cultural encounters (direct experience with diverse groups), and cultural desire (motivation to become culturally competent). Intersectionality examines how multiple identities (race, gender, class, sexuality, disability) intersect to create unique experiences of privilege and oppression."
+            },
+            {
+                topic: "Trauma-Informed Care Principles",
+                details: "Six key principles: Safety (physical and psychological), Trustworthiness and Transparency, Peer Support, Collaboration and Mutuality, Empowerment and Choice, Cultural/Historical/Gender Issues. Understanding trauma types: acute (single incident), complex (repeated/prolonged), historical (intergenerational), and developmental (childhood trauma affecting brain development). Trauma responses include fight, flight, freeze, and fawn."
+            },
+            {
+                topic: "Resilience and Protective Factors",
+                details: "Individual factors: problem-solving skills, emotional regulation, sense of purpose, optimism. Family factors: supportive relationships, clear expectations, opportunities for participation. Community factors: caring adults, positive peer groups, quality schools, safe neighborhoods. Resilience is not innate but can be developed through strengthening protective factors and reducing risk factors."
+            },
+            {
+                topic: "Social Justice and Anti-Oppressive Practice",
+                details: "Understanding systemic oppression: racism, sexism, homophobia, transphobia, ableism, classism, ageism. Privilege awareness and allyship. Advocacy levels: case (individual client), cause (policy/system change), class (group advocacy). Social work's commitment to social justice includes challenging discrimination, promoting equity, and working for structural change."
+            },
+            {
+                topic: "LGBTQ+ Affirmative Practice",
+                details: "Understanding sexual orientation vs. gender identity. Creating inclusive environments. Minority stress theory and its impact on LGBTQ+ mental health. Affirming language and pronouns. Understanding coming out processes and family dynamics. Legal and policy issues affecting LGBTQ+ individuals and families."
+            },
+            {
+                topic: "Substance Use and Addiction",
+                details: "Disease model vs. biopsychosocial model of addiction. Stages of change (Prochaska & DiClemente): precontemplation, contemplation, preparation, action, maintenance, relapse. Motivational interviewing techniques. Understanding co-occurring disorders. Family impact and codependency. Harm reduction approaches."
             }
         ]
     },

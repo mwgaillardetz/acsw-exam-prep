@@ -68,12 +68,26 @@
                 <div class="objective-description" id="objective-description"></div>
             </div>
 
+            <!-- Domain Navigation -->
+            <div class="domain-navigation">
+                <button class="btn-nav" id="prev-domain-btn" onclick="platform.navigateToPreviousDomain()" 
+                        title="Previous Domain" aria-label="Navigate to previous domain">
+                    ← Previous Domain
+                </button>
+                <span class="domain-indicator" id="domain-indicator" aria-live="polite">Domain 1 of 4</span>
+                <button class="btn-nav" id="next-domain-btn" onclick="platform.navigateToNextDomain()" 
+                        title="Next Domain" aria-label="Navigate to next domain">
+                    Next Domain →
+                </button>
+            </div>
+
             <div class="objective-content" id="objective-content">
                 <!-- Content will be populated by JavaScript -->
             </div>
 
             <div class="objective-actions">
                 <button class="btn-secondary" onclick="startObjectiveExam()">Practice Questions for This Domain</button>
+                <button class="btn-secondary" onclick="goHome()">← Back to Home</button>
             </div>
         </div>
 
@@ -247,6 +261,7 @@
     </div>
 
     <script src="questions.js"></script>
+    <script src="comprehensive-study-guide.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
