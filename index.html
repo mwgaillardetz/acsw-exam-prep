@@ -53,6 +53,10 @@
                 <button class="btn-back" onclick="goHome()">← Back to Home</button>
                 <h1>LCSW Study Guide</h1>
                 <p>Comprehensive study materials for all 4 exam domains</p>
+                <div class="study-guide-toggle">
+                    <button class="btn-secondary" onclick="toggleStudyGuideMode()">Toggle Review Questions</button>
+                    <span id="study-guide-mode-indicator">Standard Mode</span>
+                </div>
             </div>
 
             <div class="objectives-grid" id="objectives-grid">
@@ -63,19 +67,19 @@
         <!-- Domain Detail Screen -->
         <div class="screen" id="objective-detail-screen">
             <div class="objective-header">
-                <button class="btn-back" onclick="showStudyGuide()">← Back to Study Guide</button>
+                <button class="btn-back" id="back-to-study-guide">← Back to Study Guide</button>
                 <div class="objective-title" id="objective-title"></div>
                 <div class="objective-description" id="objective-description"></div>
             </div>
 
             <!-- Domain Navigation -->
             <div class="domain-navigation">
-                <button class="btn-nav" id="prev-domain-btn" onclick="platform.navigateToPreviousDomain()" 
+                <button class="btn-nav" id="prev-domain-btn" 
                         title="Previous Domain" aria-label="Navigate to previous domain">
                     ← Previous Domain
                 </button>
                 <span class="domain-indicator" id="domain-indicator" aria-live="polite">Domain 1 of 4</span>
-                <button class="btn-nav" id="next-domain-btn" onclick="platform.navigateToNextDomain()" 
+                <button class="btn-nav" id="next-domain-btn" 
                         title="Next Domain" aria-label="Navigate to next domain">
                     Next Domain →
                 </button>
@@ -86,8 +90,8 @@
             </div>
 
             <div class="objective-actions">
-                <button class="btn-secondary" onclick="startObjectiveExam()">Practice Questions for This Domain</button>
-                <button class="btn-secondary" onclick="goHome()">← Back to Home</button>
+                <button class="btn-secondary" id="practice-questions-btn">Practice Questions for This Domain</button>
+                <button class="btn-secondary" id="back-to-home-btn">← Back to Home</button>
             </div>
         </div>
 
@@ -100,7 +104,7 @@
             </div>
 
             <div class="exam-types">
-                <div class="exam-type-card" onclick="startFullExam()">
+                <div class="exam-type-card" id="full-exam-btn">
                     <div class="exam-icon">🎓</div>
                     <h3>Full Practice Exam</h3>
                     <p>170 questions covering all domains - matches real exam format</p>
@@ -111,7 +115,7 @@
                     </div>
                 </div>
 
-                <div class="exam-type-card" onclick="showCategoryExams()">
+                <div class="exam-type-card" id="category-exams-btn">
                     <div class="exam-icon">🔍</div>
                     <h3>Domain-based Exams</h3>
                     <p>Focus on specific exam domains - untimed study mode</p>
@@ -126,7 +130,7 @@
         <!-- Category Exams Screen -->
         <div class="screen" id="category-exams-screen">
             <div class="category-header">
-                <button class="btn-back" onclick="showExamOptions()">← Back to Exam Options</button>
+                <button class="btn-back" id="back-to-exam-options-btn">← Back to Exam Options</button>
                 <h1>Domain-based Practice Exams</h1>
                 <p>Select a domain to practice specific topics</p>
             </div>
@@ -139,7 +143,7 @@
         <!-- Exam Screen -->
         <div class="screen" id="exam-screen">
             <div class="exam-header">
-                <button class="btn-back" onclick="exitExam()">← Exit Exam</button>
+                <button class="btn-back" id="exit-exam-btn">← Exit Exam</button>
                 <div class="exam-progress">
                     <div class="progress-info">
                         <span id="questionCounter">Question 1 of 170</span>
@@ -171,8 +175,9 @@
                 </div>
 
                 <div class="question-actions">
-                    <button class="btn-secondary" onclick="previousQuestion()">← Previous</button>
-                    <button class="btn-primary" onclick="nextQuestion()">Next →</button>
+                    <button class="btn-secondary" id="prev-question-btn">← Previous</button>
+                    <button class="btn-secondary" id="pause-exam-btn">Pause</button>
+                    <button class="btn-primary" id="next-question-btn">Next →</button>
                 </div>
             </div>
         </div>
@@ -207,9 +212,9 @@
                 </div>
 
                 <div class="results-actions">
-                    <button class="btn-primary" onclick="reviewAnswers()">Review Answers</button>
-                    <button class="btn-secondary" onclick="startNewExam()">Take Another Exam</button>
-                    <button class="btn-secondary" onclick="goHome()">Back to Home</button>
+                    <button class="btn-primary" id="review-answers-btn">Review Answers</button>
+                    <button class="btn-secondary" id="take-another-exam-btn">Take Another Exam</button>
+                    <button class="btn-secondary" id="results-back-home-btn">Back to Home</button>
                 </div>
             </div>
         </div>
@@ -217,12 +222,12 @@
         <!-- Review Screen -->
         <div class="screen" id="review-screen">
             <div class="review-header">
-                <button class="btn-back" onclick="showResults()">← Back to Results</button>
+                <button class="btn-back" id="back-to-results-btn">← Back to Results</button>
                 <h1>Answer Review</h1>
                 <div class="review-navigation">
-                    <button class="btn-nav" onclick="previousReviewQuestion()">← Previous</button>
+                    <button class="btn-nav" id="prev-review-question-btn">← Previous</button>
                     <span id="reviewCounter">Question 1 of 170</span>
-                    <button class="btn-nav" onclick="nextReviewQuestion()">Next →</button>
+                    <button class="btn-nav" id="next-review-question-btn">Next →</button>
                 </div>
             </div>
 
@@ -261,7 +266,928 @@
     </div>
 
     <script src="questions.js"></script>
-    <script src="comprehensive-study-guide.js"></script>
+    <script src="study-guide.js"></script>
+    <script src="review-questions.js"></script>
+    <script src="exam-functions.js"></script>
     <script src="script.js"></script>
+    <script>
+        // Direct button handlers
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize theme from localStorage
+            var savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            var themeIcon = document.querySelector('.theme-icon');
+            if (themeIcon) {
+                themeIcon.textContent = savedTheme === 'light' ? '☀️' : '🌙';
+            }
+            // Get the buttons
+            var studyGuideButton = document.querySelectorAll('.mode-card')[0];
+            var examOptionsButton = document.querySelectorAll('.mode-card')[1];
+            
+            // Add direct click handlers
+            studyGuideButton.addEventListener('click', function() {
+                document.querySelectorAll('.screen').forEach(function(screen) {
+                    screen.classList.remove('active');
+                });
+                document.getElementById('study-guide-screen').classList.add('active');
+                
+                // Populate the study guide grid
+                var grid = document.getElementById('objectives-grid');
+                if (grid && typeof studyGuide !== 'undefined') {
+                    grid.innerHTML = '';
+                    
+                    Object.keys(studyGuide).forEach(function(objectiveId) {
+                        var objective = studyGuide[objectiveId];
+                        var card = document.createElement('div');
+                        card.className = 'objective-card';
+                        
+                        card.innerHTML = `
+                            <div class="objective-number">Domain ${objectiveId}</div>
+                            <h3>${objective.title}</h3>
+                            <div class="topic-count">${objective.content.length} Topics</div>
+                        `;
+                        
+                        card.addEventListener('click', function() {
+                            showObjectiveDetail(parseInt(objectiveId));
+                        });
+                        
+                        grid.appendChild(card);
+                    });
+                }
+            });
+            
+            examOptionsButton.addEventListener('click', function() {
+                document.querySelectorAll('.screen').forEach(function(screen) {
+                    screen.classList.remove('active');
+                });
+                document.getElementById('exam-options-screen').classList.add('active');
+            });
+            
+            // Add handlers for exam option buttons
+            document.addEventListener('click', function(event) {
+                // Full exam button
+                if (event.target.closest('#full-exam-btn')) {
+                    // Navigate to the exam screen
+                    document.querySelectorAll('.screen').forEach(function(screen) {
+                        screen.classList.remove('active');
+                    });
+                    document.getElementById('exam-screen').classList.add('active');
+                    
+                    // Get questions from all domains
+                    if (typeof examQuestions !== 'undefined') {
+                        // Create a balanced set of questions (170 total for ACSW exam)
+                        var selectedQuestions = getBalancedQuestions(170);
+                        
+                        // Store questions and current index
+                        sessionStorage.setItem('examQuestions', JSON.stringify(selectedQuestions));
+                        sessionStorage.setItem('currentQuestionIndex', '0');
+                        sessionStorage.setItem('userAnswers', JSON.stringify(new Array(selectedQuestions.length).fill(null)));
+                        
+                        // Set timer (4 hours for ACSW exam)
+                        sessionStorage.setItem('timeRemaining', (4 * 60 * 60).toString()); // 4 hours in seconds
+                        startTimer();
+                        
+                        // Display first question
+                        displayQuestion(0, selectedQuestions);
+                    } else {
+                        // Fallback if examQuestions is not defined
+                        document.getElementById('questionText').textContent = 'No questions available';
+                        document.getElementById('optionsContainer').innerHTML = '';
+                    }
+                }
+                
+                // Category exams button
+                if (event.target.closest('#category-exams-btn')) {
+                    document.querySelectorAll('.screen').forEach(function(screen) {
+                        screen.classList.remove('active');
+                    });
+                    document.getElementById('category-exams-screen').classList.add('active');
+                    
+                    // Populate the category grid
+                    var grid = document.getElementById('category-grid');
+                    if (grid && typeof studyGuide !== 'undefined') {
+                        grid.innerHTML = '';
+                        
+                        Object.keys(studyGuide).forEach(function(objectiveId) {
+                            var objective = studyGuide[objectiveId];
+                            var card = document.createElement('div');
+                            card.className = 'category-card';
+                            card.setAttribute('data-objective-id', objectiveId);
+                            
+                            card.innerHTML = `
+                                <div class="category-number">Domain ${objectiveId}</div>
+                                <h3>${objective.title}</h3>
+                                <div class="category-stats">
+                                    <span>${objective.content.length} Topics</span>
+                                    <span>Untimed Study Mode</span>
+                                </div>
+                            `;
+                            
+                            card.addEventListener('click', function() {
+                                // Store the selected domain ID in sessionStorage
+                                sessionStorage.setItem('currentDomain', objectiveId);
+                                sessionStorage.setItem('currentDomainTitle', objective.title);
+                                
+                                // Navigate to the exam screen
+                                document.querySelectorAll('.screen').forEach(function(screen) {
+                                    screen.classList.remove('active');
+                                });
+                                document.getElementById('exam-screen').classList.add('active');
+                                
+                                // Update the objective badge
+                                document.getElementById('objectiveBadge').textContent = 'Domain ' + objectiveId;
+                                
+                                // Hide timer for domain-based exams
+                                document.getElementById('timer').style.display = 'none';
+                                
+                                // Get questions for this domain from questions.js
+                                if (typeof examQuestions !== 'undefined') {
+                                    // Filter questions for this domain
+                                    var domainQuestions = examQuestions.filter(function(q) {
+                                        return q.objective === parseInt(objectiveId);
+                                    });
+                                    
+                                    // Shuffle questions
+                                    domainQuestions = shuffleArray(domainQuestions);
+                                    
+                                    // Store questions and current index
+                                    sessionStorage.setItem('examQuestions', JSON.stringify(domainQuestions));
+                                    sessionStorage.setItem('currentQuestionIndex', '0');
+                                    sessionStorage.setItem('userAnswers', JSON.stringify(new Array(domainQuestions.length).fill(null)));
+                                    
+                                    // Display first question
+                                    displayQuestion(0, domainQuestions);
+                                } else {
+                                    // Fallback if examQuestions is not defined
+                                    document.getElementById('questionText').textContent = 'No questions available for ' + objective.title;
+                                    document.getElementById('optionsContainer').innerHTML = '';
+                                }
+                            });
+                            
+                            // Helper function to shuffle array
+                            function shuffleArray(array) {
+                                var shuffled = array.slice();
+                                for (var i = shuffled.length - 1; i > 0; i--) {
+                                    var j = Math.floor(Math.random() * (i + 1));
+                                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                                }
+                                return shuffled;
+                            }
+                            
+                            // Function to display a question
+                            function displayQuestion(index, questions) {
+                                if (!questions || questions.length === 0) {
+                                    return;
+                                }
+                                
+                                var question = questions[index];
+                                
+                                // Update question counter
+                                document.getElementById('questionCounter').textContent = 
+                                    `Question ${index + 1} of ${questions.length}`;
+                                
+                                // Update progress bar
+                                var progressPercent = ((index + 1) / questions.length) * 100;
+                                document.getElementById('progressFill').style.width = `${progressPercent}%`;
+                                
+                                // Update question text
+                                document.getElementById('questionText').textContent = question.question;
+                                
+                                // Update difficulty badge
+                                document.getElementById('difficultyBadge').textContent = question.difficulty;
+                                document.getElementById('difficultyBadge').className = 
+                                    `difficulty-badge ${question.difficulty.toLowerCase()}`;
+                                
+                                // Create options
+                                var optionsContainer = document.getElementById('optionsContainer');
+                                optionsContainer.innerHTML = '';
+                                
+                                question.options.forEach(function(option, optIndex) {
+                                    var optionDiv = document.createElement('div');
+                                    optionDiv.className = 'option';
+                                    
+                                    // Get user answers
+                                    var userAnswers = JSON.parse(sessionStorage.getItem('userAnswers') || '[]');
+                                    if (userAnswers[index] === optIndex) {
+                                        optionDiv.classList.add('selected');
+                                    }
+                                    
+                                    optionDiv.innerHTML = `
+                                        <div class="option-letter">${String.fromCharCode(65 + optIndex)}</div>
+                                        <div class="option-text">${option}</div>
+                                    `;
+                                    
+                                    optionDiv.addEventListener('click', function() {
+                                        // Update user answers
+                                        var userAnswers = JSON.parse(sessionStorage.getItem('userAnswers') || '[]');
+                                        userAnswers[index] = optIndex;
+                                        sessionStorage.setItem('userAnswers', JSON.stringify(userAnswers));
+                                        
+                                        // Get current domain
+                                        var currentDomain = sessionStorage.getItem('currentDomain');
+                                        
+                                        // If this is a domain-based exam, show immediate feedback
+                                        if (currentDomain) {
+                                            var isCorrect = optIndex === question.correctAnswer;
+                                            
+                                            // Update UI with feedback
+                                            document.querySelectorAll('.option').forEach(function(opt, idx) {
+                                                opt.classList.remove('selected', 'correct-feedback', 'incorrect-feedback');
+                                                
+                                                if (idx === question.correctAnswer) {
+                                                    opt.classList.add('correct-feedback');
+                                                } else if (idx === optIndex && !isCorrect) {
+                                                    opt.classList.add('incorrect-feedback');
+                                                }
+                                            });
+                                            
+                                            // Show explanation
+                                            setTimeout(function() {
+                                                showExplanation(question, isCorrect);
+                                            }, 500);
+                                        } else {
+                                            // Full exam - just show selection
+                                            document.querySelectorAll('.option').forEach(function(opt) {
+                                                opt.classList.remove('selected');
+                                            });
+                                            optionDiv.classList.add('selected');
+                                        }
+                                    });
+                                    
+                                    optionsContainer.appendChild(optionDiv);
+                                });
+                            }
+                            
+                            grid.appendChild(card);
+                        });
+                    }
+                }
+                
+                // Practice questions button
+                if (event.target.id === 'practice-questions-btn') {
+                    alert('Practice questions functionality not implemented in this simplified version');
+                }
+                
+                // Back to exam options button
+                if (event.target.id === 'back-to-exam-options-btn') {
+                    document.querySelectorAll('.screen').forEach(function(screen) {
+                        screen.classList.remove('active');
+                    });
+                    document.getElementById('exam-options-screen').classList.add('active');
+                }
+                
+                // Exit exam button
+                if (event.target.id === 'exit-exam-btn') {
+                    // Show confirmation dialog
+                    if (confirm('Are you sure you want to exit the exam? Your progress will be lost.')) {
+                        // Clear timer
+                        if (window.examTimer) {
+                            clearInterval(window.examTimer);
+                        }
+                        
+                        // Return to welcome screen
+                        document.querySelectorAll('.screen').forEach(function(screen) {
+                            screen.classList.remove('active');
+                        });
+                        document.getElementById('welcome-screen').classList.add('active');
+                    }
+                }
+                
+                // Pause exam button
+                if (event.target.id === 'pause-exam-btn') {
+                    pauseExam('Exam paused. Click Continue when you are ready to resume.');
+                }
+                
+                // Continue exam button
+                if (event.target.id === 'continue-exam-btn') {
+                    continueExam();
+                }
+                
+                // Previous question button
+                if (event.target.id === 'prev-question-btn') {
+                    var currentIndex = parseInt(sessionStorage.getItem('currentQuestionIndex') || '0');
+                    if (currentIndex > 0) {
+                        currentIndex--;
+                        sessionStorage.setItem('currentQuestionIndex', currentIndex);
+                        var questions = JSON.parse(sessionStorage.getItem('examQuestions') || '[]');
+                        displayQuestion(currentIndex, questions);
+                    }
+                }
+                
+                // Next question button
+                if (event.target.id === 'next-question-btn') {
+                    var currentIndex = parseInt(sessionStorage.getItem('currentQuestionIndex') || '0');
+                    var questions = JSON.parse(sessionStorage.getItem('examQuestions') || '[]');
+                    
+                    if (currentIndex < questions.length - 1) {
+                        currentIndex++;
+                        sessionStorage.setItem('currentQuestionIndex', currentIndex);
+                        displayQuestion(currentIndex, questions);
+                        
+                        // Check if we need to ask to continue (every 25 questions)
+                        if ((currentIndex + 1) % 25 === 0) {
+                            pauseExam('You have completed ' + (currentIndex + 1) + ' questions. The ACSW exam is lengthy and can cause fatigue. Taking short breaks can help maintain focus. Take a short break if needed.');
+                        }
+                        
+                        // Rate limit - prevent clicking too quickly through questions
+                        var lastQuestionTime = parseInt(sessionStorage.getItem('lastQuestionTime') || '0');
+                        var currentTime = new Date().getTime();
+                        
+                        if (lastQuestionTime > 0 && currentTime - lastQuestionTime < 2000) { // 2 seconds minimum
+                            var quickClicks = parseInt(sessionStorage.getItem('quickClicks') || '0');
+                            quickClicks++;
+                            sessionStorage.setItem('quickClicks', quickClicks);
+                            
+                            if (quickClicks >= 5) { // After 5 quick clicks
+                                pauseExam('You are moving through questions very quickly. The ACSW exam requires careful consideration of each question. Please take your time.');
+                                sessionStorage.setItem('quickClicks', '0');
+                            }
+                        } else {
+                            sessionStorage.setItem('quickClicks', '0');
+                        }
+                        
+                        sessionStorage.setItem('lastQuestionTime', currentTime);
+                    } else {
+                        // Last question - show results
+                        calculateResults();
+                    }
+                }
+                
+                // Results screen buttons
+                if (event.target.id === 'review-answers-btn') {
+                    document.querySelectorAll('.screen').forEach(function(screen) {
+                        screen.classList.remove('active');
+                    });
+                    document.getElementById('review-screen').classList.add('active');
+                    
+                    // Initialize review
+                    sessionStorage.setItem('reviewIndex', '0');
+                    displayReviewQuestion(0);
+                }
+                
+                if (event.target.id === 'take-another-exam-btn') {
+                    document.querySelectorAll('.screen').forEach(function(screen) {
+                        screen.classList.remove('active');
+                    });
+                    document.getElementById('exam-options-screen').classList.add('active');
+                }
+                
+                if (event.target.id === 'results-back-home-btn') {
+                    document.querySelectorAll('.screen').forEach(function(screen) {
+                        screen.classList.remove('active');
+                    });
+                    document.getElementById('welcome-screen').classList.add('active');
+                }
+                
+                // Review screen buttons
+                if (event.target.id === 'back-to-results-btn') {
+                    document.querySelectorAll('.screen').forEach(function(screen) {
+                        screen.classList.remove('active');
+                    });
+                    document.getElementById('results-screen').classList.add('active');
+                }
+                
+                if (event.target.id === 'prev-review-question-btn') {
+                    var reviewIndex = parseInt(sessionStorage.getItem('reviewIndex') || '0');
+                    if (reviewIndex > 0) {
+                        reviewIndex--;
+                        sessionStorage.setItem('reviewIndex', reviewIndex);
+                        displayReviewQuestion(reviewIndex);
+                    }
+                }
+                
+                if (event.target.id === 'next-review-question-btn') {
+                    var reviewIndex = parseInt(sessionStorage.getItem('reviewIndex') || '0');
+                    var questions = JSON.parse(sessionStorage.getItem('examQuestions') || '[]');
+                    
+                    if (reviewIndex < questions.length - 1) {
+                        reviewIndex++;
+                        sessionStorage.setItem('reviewIndex', reviewIndex);
+                        displayReviewQuestion(reviewIndex);
+                    }
+                }
+            });
+            
+            // Add handlers for back buttons
+            document.querySelectorAll('.btn-back').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    document.querySelectorAll('.screen').forEach(function(screen) {
+                        screen.classList.remove('active');
+                    });
+                    document.getElementById('welcome-screen').classList.add('active');
+                });
+            });
+            
+            // Add handler for back to study guide button
+            document.addEventListener('click', function(event) {
+                if (event.target && event.target.id === 'back-to-study-guide') {
+                    document.querySelectorAll('.screen').forEach(function(screen) {
+                        screen.classList.remove('active');
+                    });
+                    document.getElementById('study-guide-screen').classList.add('active');
+                }
+                
+                // Back to home button
+                if (event.target && event.target.id === 'back-to-home-btn') {
+                    document.querySelectorAll('.screen').forEach(function(screen) {
+                        screen.classList.remove('active');
+                    });
+                    document.getElementById('welcome-screen').classList.add('active');
+                }
+            });
+            
+            // Function to hide explanation
+            window.hideExplanation = function() {
+                var explanationDiv = document.getElementById('instantExplanation');
+                if (explanationDiv) {
+                    explanationDiv.style.display = 'none';
+                }
+            };
+            
+            // Function to display a question
+            window.displayQuestion = function(index, questions) {
+                if (!questions || questions.length === 0) {
+                    return;
+                }
+                
+                // Hide any existing explanation
+                hideExplanation();
+                
+                var question = questions[index];
+                
+                // Update question counter
+                document.getElementById('questionCounter').textContent = 
+                    `Question ${index + 1} of ${questions.length}`;
+                
+                // Update progress bar
+                var progressPercent = ((index + 1) / questions.length) * 100;
+                document.getElementById('progressFill').style.width = `${progressPercent}%`;
+                
+                // Update question text
+                document.getElementById('questionText').textContent = question.question;
+                
+                // Update difficulty badge
+                document.getElementById('difficultyBadge').textContent = question.difficulty;
+                document.getElementById('difficultyBadge').className = 
+                    `difficulty-badge ${question.difficulty.toLowerCase()}`;
+                
+                // Create options
+                var optionsContainer = document.getElementById('optionsContainer');
+                optionsContainer.innerHTML = '';
+                
+                question.options.forEach(function(option, optIndex) {
+                    var optionDiv = document.createElement('div');
+                    optionDiv.className = 'option';
+                    
+                    // Get user answers
+                    var userAnswers = JSON.parse(sessionStorage.getItem('userAnswers') || '[]');
+                    if (userAnswers[index] === optIndex) {
+                        optionDiv.classList.add('selected');
+                    }
+                    
+                    optionDiv.innerHTML = `
+                        <div class="option-letter">${String.fromCharCode(65 + optIndex)}</div>
+                        <div class="option-text">${option}</div>
+                    `;
+                    
+                    optionDiv.addEventListener('click', function() {
+                        // Update user answers
+                        var userAnswers = JSON.parse(sessionStorage.getItem('userAnswers') || '[]');
+                        userAnswers[index] = optIndex;
+                        sessionStorage.setItem('userAnswers', JSON.stringify(userAnswers));
+                        
+                        // Update UI
+                        document.querySelectorAll('.option').forEach(function(opt) {
+                            opt.classList.remove('selected');
+                        });
+                        optionDiv.classList.add('selected');
+                    });
+                    
+                    optionsContainer.appendChild(optionDiv);
+                });
+            };
+            
+            // Function to calculate results
+            window.calculateResults = function() {
+                // Check for unanswered questions and confirm completion
+                if (!confirmExamCompletion()) {
+                    return; // User canceled, don't finish the exam
+                }
+                
+                // Clear timer
+                if (window.examTimer) {
+                    clearInterval(window.examTimer);
+                }
+                
+                var questions = JSON.parse(sessionStorage.getItem('examQuestions') || '[]');
+                var userAnswers = JSON.parse(sessionStorage.getItem('userAnswers') || '[]');
+                var correctAnswers = 0;
+                var objectiveScores = {};
+                var unansweredCount = 0;
+                
+                // Initialize objective scores
+                for (var i = 1; i <= 4; i++) {
+                    objectiveScores[i] = { correct: 0, total: 0, unanswered: 0 };
+                }
+                
+                // Calculate scores
+                questions.forEach(function(question, index) {
+                    var userAnswer = userAnswers[index];
+                    
+                    // Track unanswered questions
+                    if (userAnswer === null) {
+                        unansweredCount++;
+                        objectiveScores[question.objective].unanswered++;
+                    }
+                    
+                    var isCorrect = userAnswer === question.correctAnswer;
+                    
+                    if (isCorrect) {
+                        correctAnswers++;
+                    }
+                    
+                    objectiveScores[question.objective].total++;
+                    if (isCorrect) {
+                        objectiveScores[question.objective].correct++;
+                    }
+                });
+                
+                // Calculate percentage
+                var percentage = Math.round((correctAnswers / questions.length) * 100);
+                
+                // Store results
+                sessionStorage.setItem('examResults', JSON.stringify({
+                    totalQuestions: questions.length,
+                    correctAnswers: correctAnswers,
+                    percentage: percentage,
+                    objectiveScores: objectiveScores,
+                    unansweredCount: unansweredCount
+                }));
+                
+                // Display results
+                displayResults();
+            };
+            
+            // Function to get balanced questions for full exam
+            window.getBalancedQuestions = function(count) {
+                var questionsByObjective = {};
+                var questionsPerObjective = Math.floor(count / 4);
+                var remainder = count % 4;
+                
+                // Group questions by objective
+                examQuestions.forEach(function(question) {
+                    if (!questionsByObjective[question.objective]) {
+                        questionsByObjective[question.objective] = [];
+                    }
+                    questionsByObjective[question.objective].push(question);
+                });
+                
+                var selectedQuestions = [];
+                
+                // Select questions from each objective
+                for (var objective = 1; objective <= 4; objective++) {
+                    var objectiveQuestions = questionsByObjective[objective] || [];
+                    var shuffled = shuffleArray(objectiveQuestions.slice());
+                    var numToTake = questionsPerObjective + (objective <= remainder ? 1 : 0);
+                    
+                    for (var i = 0; i < numToTake; i++) {
+                        if (shuffled.length > 0) {
+                            selectedQuestions.push(shuffled[i % shuffled.length]);
+                        }
+                    }
+                }
+                
+                return shuffleArray(selectedQuestions);
+            };
+            
+            // Function to shuffle array
+            window.shuffleArray = function(array) {
+                for (var i = array.length - 1; i > 0; i--) {
+                    var j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            };
+            
+            // Function to start timer
+            window.startTimer = function() {
+                var timerElement = document.getElementById('timer');
+                timerElement.style.display = 'inline-block';
+                
+                updateTimer();
+                
+                // Clear existing timer
+                if (window.examTimer) {
+                    clearInterval(window.examTimer);
+                }
+                
+                // Start new timer
+                window.examTimer = setInterval(function() {
+                    var timeRemaining = parseInt(sessionStorage.getItem('timeRemaining') || '0');
+                    timeRemaining--;
+                    
+                    if (timeRemaining <= 0) {
+                        clearInterval(window.examTimer);
+                        calculateResults();
+                    } else {
+                        sessionStorage.setItem('timeRemaining', timeRemaining.toString());
+                        updateTimer();
+                    }
+                }, 1000);
+            };
+            
+            // Function to update timer display
+            window.updateTimer = function() {
+                var timeRemaining = parseInt(sessionStorage.getItem('timeRemaining') || '0');
+                var hours = Math.floor(timeRemaining / 3600);
+                var minutes = Math.floor((timeRemaining % 3600) / 60);
+                var seconds = timeRemaining % 60;
+                
+                document.getElementById('timer').textContent =
+                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            };
+            
+            // Function to display review question
+            window.displayReviewQuestion = function(index) {
+                var questions = JSON.parse(sessionStorage.getItem('examQuestions') || '[]');
+                var userAnswers = JSON.parse(sessionStorage.getItem('userAnswers') || '[]');
+                
+                if (!questions || questions.length === 0 || index >= questions.length) {
+                    return;
+                }
+                
+                var question = questions[index];
+                var userAnswer = userAnswers[index];
+                var isCorrect = userAnswer === question.correctAnswer;
+                
+                // Update review counter
+                document.getElementById('reviewCounter').textContent = 
+                    `Question ${index + 1} of ${questions.length}`;
+                
+                // Update question text
+                document.getElementById('reviewQuestionText').textContent = question.question;
+                
+                // Update badges
+                document.getElementById('reviewDifficultyBadge').textContent = question.difficulty;
+                document.getElementById('reviewDifficultyBadge').className = 
+                    `difficulty-badge ${question.difficulty.toLowerCase()}`;
+                document.getElementById('reviewObjectiveBadge').textContent = `Domain ${question.objective}`;
+                
+                // Update result badge
+                var resultBadge = document.getElementById('resultBadge');
+                resultBadge.textContent = isCorrect ? 'Correct' : 'Incorrect';
+                resultBadge.className = `result-badge ${isCorrect ? 'correct' : 'incorrect'}`;
+                
+                // Update user answer
+                var userAnswerEl = document.getElementById('userAnswer');
+                userAnswerEl.textContent = userAnswer !== null ? 
+                    `${String.fromCharCode(65 + userAnswer)}. ${question.options[userAnswer]}` : 
+                    'Not answered';
+                userAnswerEl.className = `answer-option ${isCorrect ? 'correct-answer' : 'incorrect-answer'}`;
+                
+                // Update correct answer
+                document.getElementById('correctAnswer').textContent = 
+                    `${String.fromCharCode(65 + question.correctAnswer)}. ${question.options[question.correctAnswer]}`;
+                
+                // Update explanation
+                document.getElementById('answerExplanation').textContent = question.explanation;
+            };
+            
+            // Function to display results
+            window.displayResults = function() {
+                var results = JSON.parse(sessionStorage.getItem('examResults') || '{}');
+                
+                // Navigate to results screen
+                document.querySelectorAll('.screen').forEach(function(screen) {
+                    screen.classList.remove('active');
+                });
+                document.getElementById('results-screen').classList.add('active');
+                
+                // Update score percentage
+                document.getElementById('scorePercentage').textContent = `${results.percentage}%`;
+                
+                // Update performance stats
+                var statsContainer = document.getElementById('performanceStats');
+                statsContainer.innerHTML = `
+                    <div class="stat-item">
+                        <span class="stat-label">Correct Answers:</span>
+                        <span class="stat-value">${results.correctAnswers} / ${results.totalQuestions}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Unanswered Questions:</span>
+                        <span class="stat-value">${results.unansweredCount || 0}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Passing Score:</span>
+                        <span class="stat-value">${results.percentage >= 75 ? '✅ PASS' : '❌ FAIL'}</span>
+                    </div>
+                `;
+                
+                // Update objective breakdown
+                var breakdownContainer = document.getElementById('objectiveBreakdown');
+                breakdownContainer.innerHTML = '';
+                
+                Object.entries(results.objectiveScores).forEach(function([objectiveId, scores]) {
+                    if (scores.total === 0) return;
+                    
+                    var objectiveTitle = '';
+                    if (typeof studyGuide !== 'undefined' && studyGuide[objectiveId]) {
+                        objectiveTitle = studyGuide[objectiveId].title;
+                    }
+                    
+                    var percentage = scores.total > 0 ? Math.round((scores.correct / scores.total) * 100) : 0;
+                    
+                    var objectiveDiv = document.createElement('div');
+                    objectiveDiv.className = 'objective-score';
+                    objectiveDiv.innerHTML = `
+                        <div class="objective-info">
+                            <span class="objective-name">Domain ${objectiveId}: ${objectiveTitle}</span>
+                            <span class="objective-score-text">${scores.correct}/${scores.total} (${percentage}%)</span>
+                        </div>
+                        <div class="score-bar">
+                            <div class="score-fill" style="width: ${percentage}%"></div>
+                        </div>
+                        <div class="recommendation">
+                            ${percentage < 75 ? '📚 Review this domain' : '✅ Strong performance'}
+                            ${scores.unanswered > 0 ? `<br>⚠️ ${scores.unanswered} unanswered questions` : ''}
+                        </div>
+                    `;
+                    
+                    breakdownContainer.appendChild(objectiveDiv);
+                });
+            };
+            
+            // Direct implementation of toggleTheme
+            var themeToggleButton = document.querySelector('.theme-toggle');
+            themeToggleButton.addEventListener('click', function() {
+                var currentTheme = document.documentElement.getAttribute('data-theme');
+                var newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                
+                // Update theme icon
+                var themeIcon = document.querySelector('.theme-icon');
+                themeIcon.textContent = newTheme === 'light' ? '☀️' : '🌙';
+                
+                // Save theme preference
+                localStorage.setItem('theme', newTheme);
+            });
+            
+            // Function to show explanation for domain-based exams
+            window.showExplanation = function(question, isCorrect) {
+                var explanationDiv = document.getElementById('instantExplanation');
+                if (!explanationDiv) {
+                    explanationDiv = document.createElement('div');
+                    explanationDiv.id = 'instantExplanation';
+                    explanationDiv.className = 'instant-explanation';
+                    document.querySelector('.question-container').appendChild(explanationDiv);
+                }
+                
+                // Format the explanation text
+                var explanation = question.explanation || '';
+                
+                explanationDiv.innerHTML = `
+                    <div class="feedback-header ${isCorrect ? 'correct' : 'incorrect'}">
+                        <span class="feedback-icon">${isCorrect ? '✅' : '❌'}</span>
+                        <span class="feedback-text">${isCorrect ? 'Correct!' : 'Incorrect'}</span>
+                    </div>
+                    <div class="explanation-formatted">
+                        <strong>Explanation:</strong>
+                        <div class="explanation-content">${explanation}</div>
+                    </div>
+                `;
+                
+                explanationDiv.style.display = 'block';
+            };
+            
+            // Function to show objective detail
+            window.showObjectiveDetail = function(objectiveId) {
+                if (typeof studyGuide === 'undefined' || !studyGuide[objectiveId]) {
+                    console.error('Study guide not found for objective:', objectiveId);
+                    return;
+                }
+                
+                var objective = studyGuide[objectiveId];
+                
+                document.querySelectorAll('.screen').forEach(function(screen) {
+                    screen.classList.remove('active');
+                });
+                document.getElementById('objective-detail-screen').classList.add('active');
+                
+                document.getElementById('objective-title').innerHTML = `
+                    <span class="objective-number">Domain ${objectiveId}</span>
+                    <h1>${objective.title}</h1>
+                `;
+                
+                var content = document.getElementById('objective-content');
+                content.innerHTML = '';
+                
+                objective.content.forEach(function(item) {
+                    var section = document.createElement('div');
+                    section.className = 'content-section';
+                    
+                    // Format the details with better spacing and structure
+                    var formattedDetails = item.details;
+                    
+                    // Replace semicolons with line breaks for better readability
+                    formattedDetails = formattedDetails.replace(/; /g, ';<br><br>• ');
+                    
+                    // Add bullet points to lists
+                    formattedDetails = formattedDetails.replace(/\. ([A-Z])/g, '.<br><br>• $1');
+                    
+                    // Add bullet point to the beginning if it doesn't start with one
+                    if (!formattedDetails.startsWith('•')) {
+                        formattedDetails = '• ' + formattedDetails;
+                    }
+                    
+                    section.innerHTML = `
+                        <h3>${item.topic}</h3>
+                        <div class="details-content">${formattedDetails}</div>
+                    `;
+                    content.appendChild(section);
+                });
+                
+                // Add bottom navigation
+                var bottomNav = document.createElement('div');
+                bottomNav.className = 'domain-navigation bottom-nav';
+                bottomNav.innerHTML = `
+                    <button class="btn-nav" id="bottom-prev-domain-btn" 
+                            title="Previous Domain" aria-label="Navigate to previous domain">
+                        ← Previous Domain
+                    </button>
+                    <span class="domain-indicator" id="bottom-domain-indicator" aria-live="polite">Domain ${objectiveId} of ${Object.keys(studyGuide).length}</span>
+                    <button class="btn-nav" id="bottom-next-domain-btn" 
+                            title="Next Domain" aria-label="Navigate to next domain">
+                        Next Domain →
+                    </button>
+                `;
+                content.appendChild(bottomNav);
+                
+                // Update bottom navigation buttons
+                var bottomPrevBtn = document.getElementById('bottom-prev-domain-btn');
+                var bottomNextBtn = document.getElementById('bottom-next-domain-btn');
+                
+                bottomPrevBtn.addEventListener('click', function() {
+                    if (objectiveId > 1) {
+                        showObjectiveDetail(objectiveId - 1);
+                    }
+                });
+                
+                bottomNextBtn.addEventListener('click', function() {
+                    if (objectiveId < Object.keys(studyGuide).length) {
+                        showObjectiveDetail(objectiveId + 1);
+                    }
+                });
+                
+                if (objectiveId <= 1) {
+                    bottomPrevBtn.disabled = true;
+                } else {
+                    bottomPrevBtn.disabled = false;
+                }
+                
+                if (objectiveId >= Object.keys(studyGuide).length) {
+                    bottomNextBtn.disabled = true;
+                } else {
+                    bottomNextBtn.disabled = false;
+                }
+                
+                // Update domain navigation
+                var totalDomains = Object.keys(studyGuide).length;
+                
+                // Update domain indicator
+                document.getElementById('domain-indicator').textContent = `Domain ${objectiveId} of ${totalDomains}`;
+                
+                // Update navigation buttons
+                var prevBtn = document.getElementById('prev-domain-btn');
+                var nextBtn = document.getElementById('next-domain-btn');
+                
+                prevBtn.addEventListener('click', function() {
+                    if (objectiveId > 1) {
+                        showObjectiveDetail(objectiveId - 1);
+                    }
+                });
+                
+                nextBtn.addEventListener('click', function() {
+                    if (objectiveId < totalDomains) {
+                        showObjectiveDetail(objectiveId + 1);
+                    }
+                });
+                
+                // Enable/disable previous button
+                if (objectiveId <= 1) {
+                    prevBtn.disabled = true;
+                } else {
+                    prevBtn.disabled = false;
+                }
+                
+                // Enable/disable next button
+                if (objectiveId >= totalDomains) {
+                    nextBtn.disabled = true;
+                } else {
+                    nextBtn.disabled = false;
+                }
+            };
+        });
+    </script>
+
 </body>
 </html>

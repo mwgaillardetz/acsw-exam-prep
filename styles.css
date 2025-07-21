@@ -408,6 +408,23 @@ body {
     margin-bottom: 3rem;
 }
 
+.study-guide-toggle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+#study-guide-mode-indicator {
+    background: var(--accent-primary);
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 16px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
 .study-header h1 {
     color: var(--text-primary);
     font-size: 2.5rem;
@@ -570,10 +587,24 @@ body {
     font-size: 1.4rem;
 }
 
-.content-section p {
+.content-section .details-content {
     color: var(--text-secondary);
     line-height: 1.8;
     font-size: 1rem;
+    padding-left: 1rem;
+}
+
+.details-content br {
+    display: block;
+    margin-top: 0.5rem;
+    content: "";
+}
+
+.bottom-nav {
+    margin-top: 2rem;
+    margin-bottom: 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
 }
 
 .objective-actions {
@@ -1087,6 +1118,148 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+/* Review Questions Styles */
+.review-question {
+    background: var(--bg-card-elevated);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.review-question .question-text {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.review-question .options-container {
+    margin-bottom: 1.5rem;
+}
+
+.review-option {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.review-option .option-letter {
+    background: var(--accent-primary);
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+
+.show-answer-btn {
+    margin-bottom: 1rem;
+}
+
+.answer-explanation {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+}
+
+.answer-explanation .correct-answer {
+    color: var(--success);
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.answer-explanation .explanation {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    white-space: pre-line;
+}
+
+.answer-explanation .explanation-formatted {
+    color: var(--text-secondary);
+    margin-top: 1rem;
+}
+
+.answer-explanation .explanation-content {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-top: 0.5rem;
+    padding-left: 1rem;
+}
+
+.explanation-content p {
+    margin-bottom: 0.75rem;
+}
+
+.explanation-content strong {
+    color: var(--accent-primary);
+    font-weight: 600;
+}
+
+.explanation-content em {
+    font-style: italic;
+    color: var(--text-primary);
+    background-color: rgba(8, 145, 178, 0.1);
+    padding: 0 3px;
+    border-radius: 3px;
+}
+
+/* Simple review question formatting */
+.review-question {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background-color: var(--bg-card);
+    border-radius: 8px;
+    border-left: 4px solid var(--accent-primary);
+}
+
+.question-text p {
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.question-text strong {
+    color: var(--accent-primary);
+}
+
+.correct-answer p {
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.correct-answer strong {
+    color: var(--success);
+}
+
+.explanation-formatted p {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+    white-space: pre-line;
+}
+
+.explanation-formatted strong {
+    color: var(--accent-primary);
+}
+
+/* Format the explanation content to properly display numbered items */
+.explanation-content::before {
+    content: "";
+    white-space: pre-wrap;
+}
+
 .review-header h1 {
     color: #333;
     margin-bottom: 1rem;
@@ -1177,6 +1350,13 @@ body {
 .explanation-section p {
     color: #666;
     line-height: 1.6;
+}
+
+#answerExplanation.explanation-content {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-top: 0.5rem;
+    padding-left: 1rem;
 }
 
 /* Instant Feedback Styles */
