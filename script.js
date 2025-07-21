@@ -7,11 +7,16 @@ function toggleTheme() {
 
     // Update theme icon
     const themeIcon = document.querySelector('.theme-icon');
-    themeIcon.textContent = newTheme === 'light' ? '☀️' : '🌙';
+    if (themeIcon) {
+        themeIcon.textContent = newTheme === 'light' ? '☀️' : '🌙';
+    }
 
     // Save theme preference
     localStorage.setItem('theme', newTheme);
 }
+
+// Make sure toggleTheme is available globally
+window.toggleTheme = toggleTheme;
 
 // Initialize theme from localStorage or default to dark
 function initializeTheme() {
@@ -41,7 +46,12 @@ class LCSWExamPlatform {
         this.timer = null;
         this.timeRemaining = 0;
         this.recentQuestions = this.loadRecentQuestions();
-
+        this.useReviewMode = false;
+        
+        // Make sure global variables are defined
+        this.studyGuide = typeof studyGuide !== 'undefined' ? studyGuide : {};
+        this.reviewQuestions = typeof reviewQuestions !== 'undefined' ? reviewQuestions : null;
+        
         this.init();
     }
 
@@ -94,8 +104,8 @@ class LCSWExamPlatform {
         grid.innerHTML = '';
 
         // Convert studyGuide object to array and iterate
-        Object.keys(studyGuide).forEach(objectiveId => {
-            const objective = studyGuide[objectiveId];
+        Object.keys(this.studyGuide).forEach(objectiveId => {
+            const objective = this.studyGuide[objectiveId];
             const card = document.createElement('div');
             card.className = 'objective-card';
             card.onclick = () => this.showObjectiveDetail(parseInt(objectiveId));
@@ -111,7 +121,7 @@ class LCSWExamPlatform {
     }
 
     showObjectiveDetail(objectiveId) {
-        const objective = studyGuide[objectiveId];
+        const objective = this.studyGuide[objectiveId];
         if (!objective) {
             console.error('Domain not found:', objectiveId);
             return;
@@ -124,18 +134,71 @@ class LCSWExamPlatform {
             <h1>${objective.title}</h1>
         `;
 
-        const content = document.getElementById('objective-content');
-        content.innerHTML = '';
+        // If in review questions mode and review questions are available, show them
+        if (this.useReviewMode && this.reviewQuestions && this.reviewQuestions[objectiveId]) {
+            this.showReviewQuestions(objectiveId);
+        } else {
+            // Otherwise show regular content
+            const content = document.getElementById('objective-content');
+            content.innerHTML = '';
 
-        objective.content.forEach(item => {
-            const section = document.createElement('div');
-            section.className = 'content-section';
-            section.innerHTML = `
-                <h3>${item.topic}</h3>
-                <p>${item.details}</p>
+            objective.content.forEach(item => {
+                const section = document.createElement('div');
+                section.className = 'content-section';
+                
+                // Format the details with better spacing and structure
+                let formattedDetails = item.details;
+                
+                // Replace semicolons with line breaks for better readability
+                formattedDetails = formattedDetails.replace(/; /g, ';<br><br>• ');
+                
+                // Add bullet points to lists
+                formattedDetails = formattedDetails.replace(/\. ([A-Z])/g, '.<br><br>• $1');
+                
+                // Add bullet point to the beginning if it doesn't start with one
+                if (!formattedDetails.startsWith('•')) {
+                    formattedDetails = '• ' + formattedDetails;
+                }
+                
+                section.innerHTML = `
+                    <h3>${item.topic}</h3>
+                    <div class="details-content">${formattedDetails}</div>
+                `;
+                content.appendChild(section);
+            });
+            
+            // Add bottom navigation
+            const bottomNav = document.createElement('div');
+            bottomNav.className = 'domain-navigation bottom-nav';
+            bottomNav.innerHTML = `
+                <button class="btn-nav" id="bottom-prev-domain-btn" onclick="platform.navigateToPreviousDomain()" 
+                        title="Previous Domain" aria-label="Navigate to previous domain">
+                    ← Previous Domain
+                </button>
+                <span class="domain-indicator" id="bottom-domain-indicator" aria-live="polite">Domain ${objectiveId} of ${Object.keys(this.studyGuide).length}</span>
+                <button class="btn-nav" id="bottom-next-domain-btn" onclick="platform.navigateToNextDomain()" 
+                        title="Next Domain" aria-label="Navigate to next domain">
+                    Next Domain →
+                </button>
             `;
-            content.appendChild(section);
-        });
+            content.appendChild(bottomNav);
+            
+            // Update bottom navigation buttons
+            const bottomPrevBtn = document.getElementById('bottom-prev-domain-btn');
+            const bottomNextBtn = document.getElementById('bottom-next-domain-btn');
+            
+            if (objectiveId <= 1) {
+                bottomPrevBtn.disabled = true;
+            } else {
+                bottomPrevBtn.disabled = false;
+            }
+            
+            if (objectiveId >= Object.keys(this.studyGuide).length) {
+                bottomNextBtn.disabled = true;
+            } else {
+                bottomNextBtn.disabled = false;
+            }
+        }
 
         // Update domain navigation
         this.updateDomainNavigation();
@@ -178,7 +241,7 @@ class LCSWExamPlatform {
 
     // Domain Navigation methods
     updateDomainNavigation() {
-        const totalDomains = Object.keys(studyGuide).length;
+        const totalDomains = Object.keys(this.studyGuide).length;
         const currentDomain = this.currentObjective;
         
         // Update domain indicator
@@ -210,7 +273,7 @@ class LCSWExamPlatform {
     }
 
     navigateToNextDomain() {
-        const totalDomains = Object.keys(studyGuide).length;
+        const totalDomains = Object.keys(this.studyGuide).length;
         if (this.currentObjective < totalDomains) {
             this.showObjectiveDetail(this.currentObjective + 1);
         }
@@ -225,8 +288,14 @@ class LCSWExamPlatform {
         }
         grid.innerHTML = '';
 
-        Object.keys(studyGuide).forEach(objectiveId => {
-            const objective = studyGuide[objectiveId];
+        // Make sure examQuestions is defined
+        if (typeof examQuestions === 'undefined') {
+            console.error('examQuestions is not defined');
+            return;
+        }
+
+        Object.keys(this.studyGuide).forEach(objectiveId => {
+            const objective = this.studyGuide[objectiveId];
             const questionsForObjective = examQuestions.filter(q => q.objective === parseInt(objectiveId));
 
             const card = document.createElement('div');
@@ -257,6 +326,13 @@ class LCSWExamPlatform {
     startCategoryExam(objectiveId) {
         this.examType = 'category';
         this.currentObjective = objectiveId;
+        
+        // Make sure examQuestions is defined
+        if (typeof examQuestions === 'undefined') {
+            console.error('examQuestions is not defined');
+            return;
+        }
+        
         const questionsForObjective = examQuestions.filter(q => q.objective === objectiveId);
         const availableQuestions = this.filterRecentQuestions(questionsForObjective);
         const shuffledQuestions = this.shuffleArray([...availableQuestions]);
@@ -271,6 +347,12 @@ class LCSWExamPlatform {
     }
 
     getRandomQuestions(count) {
+        // Make sure examQuestions is defined
+        if (typeof examQuestions === 'undefined') {
+            console.error('examQuestions is not defined');
+            return [];
+        }
+        
         if (this.examType === 'full') {
             return this.getBalancedRandomQuestions(count);
         }
@@ -283,6 +365,12 @@ class LCSWExamPlatform {
         const questionsPerObjective = Math.floor(count / 4);
         const remainder = count % 4;
 
+        // Make sure examQuestions is defined
+        if (typeof examQuestions === 'undefined') {
+            console.error('examQuestions is not defined');
+            return [];
+        }
+        
         examQuestions.forEach(question => {
             if (!questionsByObjective[question.objective]) {
                 questionsByObjective[question.objective] = [];
@@ -331,7 +419,7 @@ class LCSWExamPlatform {
         this.showCyclingMessage();
 
         const timerElement = document.getElementById('timer');
-        if (this.timeRemaining > 0) {
+        if (this.timeRemaining > 0 && this.examType === 'full') {
             timerElement.style.display = 'inline-block';
             this.startTimer();
         } else {
@@ -421,8 +509,8 @@ class LCSWExamPlatform {
     selectOption(optionIndex) {
         this.userAnswers[this.currentQuestionIndex] = optionIndex;
 
-        // For untimed exams, show instant feedback
-        if (this.timeRemaining === 0) {
+        // For domain-based exams, show instant feedback
+        if (this.examType === 'category') {
             const question = this.examQuestions[this.currentQuestionIndex];
             const isCorrect = optionIndex === question.correctAnswer;
             
@@ -441,7 +529,7 @@ class LCSWExamPlatform {
                 this.showInstantExplanation(question, isCorrect);
             }, 500);
         } else {
-            // Timed exam - just show selection
+            // Full exam - just show selection
             document.querySelectorAll('.option').forEach((option, index) => {
                 option.classList.toggle('selected', index === optionIndex);
             });
@@ -608,7 +696,7 @@ class LCSWExamPlatform {
         Object.entries(this.results.objectiveScores).forEach(([objectiveId, scores]) => {
             if (scores.total === 0) return;
 
-            const objective = studyGuide[objectiveId];
+            const objective = this.studyGuide[objectiveId];
             if (!objective) return;
 
             const percentage = scores.total > 0 ? Math.round((scores.correct / scores.total) * 100) : 0;
@@ -669,7 +757,11 @@ class LCSWExamPlatform {
         document.getElementById('correctAnswer').textContent =
             `${String.fromCharCode(65 + question.correctAnswer)}. ${question.options[question.correctAnswer]}`;
 
-        document.getElementById('answerExplanation').textContent = question.explanation;
+        // Format the explanation text for better readability
+        const formattedExplanation = this.formatExplanationText(question.explanation);
+        const explanationEl = document.getElementById('answerExplanation');
+        explanationEl.innerHTML = formattedExplanation;
+        explanationEl.className = 'explanation-content';
 
         const userAnswerEl = document.getElementById('userAnswer');
         userAnswerEl.className = `answer-option ${isCorrect ? 'correct-answer' : 'incorrect-answer'}`;
@@ -715,13 +807,17 @@ class LCSWExamPlatform {
             document.querySelector('.question-container').appendChild(explanationDiv);
         }
         
+        // Format the explanation text for better readability
+        const formattedExplanation = this.formatExplanationText(question.explanation);
+        
         explanationDiv.innerHTML = `
             <div class="feedback-header ${isCorrect ? 'correct' : 'incorrect'}">
                 <span class="feedback-icon">${isCorrect ? '✅' : '❌'}</span>
                 <span class="feedback-text">${isCorrect ? 'Correct!' : 'Incorrect'}</span>
             </div>
-            <div class="explanation-text">
-                <strong>Explanation:</strong> ${question.explanation}
+            <div class="explanation-formatted">
+                <strong>Explanation:</strong>
+                <div class="explanation-content">${formattedExplanation}</div>
             </div>
         `;
         
@@ -795,6 +891,112 @@ class LCSWExamPlatform {
         const filtered = questions.filter(q => !this.recentQuestions.includes(q.id));
         return filtered.length >= Math.min(10, questions.length * 0.5) ? filtered : questions;
     }
+    
+    toggleStudyGuideMode() {
+        if (!this.reviewQuestions) {
+            console.log('Review questions not available');
+            return;
+        }
+        
+        this.useReviewMode = !this.useReviewMode;
+        
+        // Update the indicator
+        const indicator = document.getElementById('study-guide-mode-indicator');
+        if (indicator) {
+            indicator.textContent = this.useReviewMode ? 'Review Questions Mode' : 'Standard Mode';
+        }
+        
+        // Refresh the current view if on study guide screens
+        if (this.currentScreen === 'study-guide-screen') {
+            this.populateStudyGuide();
+        } else if (this.currentScreen === 'objective-detail-screen' && this.currentObjective) {
+            this.showObjectiveDetail(this.currentObjective);
+        }
+    }
+    
+    showReviewQuestions(domainId) {
+        if (!this.reviewQuestions || !this.reviewQuestions[domainId]) {
+            console.log('Review questions not available for this domain');
+            return;
+        }
+        
+        const domain = this.reviewQuestions[domainId];
+        const content = document.getElementById('objective-content');
+        content.innerHTML = '';
+        
+        const header = document.createElement('div');
+        header.className = 'content-section';
+        header.innerHTML = `
+            <h3>Review Questions and Answer Key</h3>
+        `;
+        content.appendChild(header);
+        
+        // Create a single text block with all questions and answers
+        const questionsText = document.createElement('div');
+        questionsText.className = 'details-content';
+        
+        let allQuestionsText = '';
+        
+        domain.questions.forEach((question, index) => {
+            allQuestionsText += `• ${index + 1}.\n\n`;
+            allQuestionsText += `• ${String.fromCharCode(65 + question.correctAnswer)}.\n\n`;
+            allQuestionsText += `• ${question.explanation}\n\n`;
+        });
+        
+        questionsText.innerText = allQuestionsText;
+        content.appendChild(questionsText);}}
+        
+        // Add bottom navigation for review questions too
+        const bottomNav = document.createElement('div');
+        bottomNav.className = 'domain-navigation bottom-nav';
+        bottomNav.innerHTML = `
+            <button class="btn-nav" id="bottom-prev-domain-btn" onclick="platform.navigateToPreviousDomain()" 
+                    title="Previous Domain" aria-label="Navigate to previous domain">
+                ← Previous Domain
+            </button>
+            <span class="domain-indicator" id="bottom-domain-indicator" aria-live="polite">Domain ${domainId} of ${Object.keys(this.studyGuide).length}</span>
+            <button class="btn-nav" id="bottom-next-domain-btn" onclick="platform.navigateToNextDomain()" 
+                    title="Next Domain" aria-label="Navigate to next domain">
+                Next Domain →
+            </button>
+        `;
+        content.appendChild(bottomNav);
+        
+        // Update bottom navigation buttons
+        const bottomPrevBtn = document.getElementById('bottom-prev-domain-btn');
+        const bottomNextBtn = document.getElementById('bottom-next-domain-btn');
+        
+        if (domainId <= 1) {
+            bottomPrevBtn.disabled = true;
+        } else {
+            bottomPrevBtn.disabled = false;
+        }
+        
+        if (domainId >= Object.keys(this.studyGuide).length) {
+            bottomNextBtn.disabled = true;
+        } else {
+            bottomNextBtn.disabled = false;
+        }
+    }
+    
+    toggleAnswer(domainId, questionIndex) {
+        const answerId = `answer-${domainId}-${questionIndex}`;
+        const answerDiv = document.getElementById(answerId);
+        const button = answerDiv.previousElementSibling;
+        
+        if (answerDiv.style.display === 'none') {
+            answerDiv.style.display = 'block';
+            button.textContent = 'Hide Answer';
+        } else {
+            answerDiv.style.display = 'none';
+            button.textContent = 'Show Answer';
+        }
+    }
+    
+    formatExplanationText(explanation) {
+        // Simple formatting to preserve original text structure
+        return explanation || '';
+    }
 }
 
 // Initialize the platform when the page loads
@@ -806,56 +1008,24 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Platform initialized successfully');
     } catch (error) {
         console.error('Failed to initialize platform:', error);
-        document.body.innerHTML = `
-            <div style="padding: 20px; background: #ffebee; border: 1px solid #f44336; border-radius: 4px; margin: 20px;">
-                <h2 style="color: #d32f2f;">Platform Initialization Error</h2>
-                <p>Failed to initialize the LCSW Practice Platform:</p>
-                <pre style="background: #fff; padding: 10px; overflow: auto;">${error.message}</pre>
-                <p>Please refresh the page or check the browser console for more details.</p>
-            </div>
-        `;
     }
 });
 
 // Global functions for onclick handlers
 function showStudyGuide() {
-    try {
-        if (!platform) throw new Error('Platform not initialized');
-        platform.showStudyGuide();
-    } catch (error) {
-        console.error('Error in showStudyGuide:', error);
-        alert('Error: ' + error.message);
-    }
+    platform.showStudyGuide();
 }
 
 function showExamOptions() {
-    try {
-        if (!platform) throw new Error('Platform not initialized');
-        platform.showExamOptions();
-    } catch (error) {
-        console.error('Error in showExamOptions:', error);
-        alert('Error: ' + error.message);
-    }
+    platform.showExamOptions();
 }
 
 function showCategoryExams() {
-    try {
-        if (!platform) throw new Error('Platform not initialized');
-        platform.showCategoryExams();
-    } catch (error) {
-        console.error('Error in showCategoryExams:', error);
-        alert('Error: ' + error.message);
-    }
+    platform.showCategoryExams();
 }
 
 function goHome() {
-    try {
-        if (!platform) throw new Error('Platform not initialized');
-        platform.goHome();
-    } catch (error) {
-        console.error('Error in goHome:', error);
-        alert('Error: ' + error.message);
-    }
+    platform.goHome();
 }
 
 function startFullExam() {
@@ -896,4 +1066,8 @@ function showResults() {
 
 function startNewExam() {
     platform.startNewExam();
+}
+
+function toggleStudyGuideMode() {
+    platform.toggleStudyGuideMode();
 }

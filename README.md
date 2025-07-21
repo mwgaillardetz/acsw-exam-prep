@@ -81,8 +81,9 @@ open http://localhost:4880
 1. Click **"Study Guide"** from the welcome screen
 2. Browse all 4 certification domains with detailed explanations
 3. Click on any domain to view comprehensive study materials
-4. Use **"Practice Questions for This Domain"** to test specific knowledge areas
-5. Navigate back to study guide or home easily
+4. Toggle between **Standard Mode** and **Review Questions Mode** to access practice questions with detailed answer explanations
+5. Use **"Practice Questions for This Domain"** to test specific knowledge areas
+6. Navigate back to study guide or home easily
 
 ### Practice Exam Modes
 
