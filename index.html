@@ -34,7 +34,7 @@
                     </div>
 
                     <div class="mode-card" id="pdf-study-guide-btn">
-                        <div class="mode-icon">�</div>
+                        <div class="mode-icon">📄</div>
                         <h3>PDF Study Guide</h3>
                         <p>View the official ACSW study guide in PDF format</p>
                         <ul>
@@ -44,7 +44,7 @@
                         </ul>
                     </div>
                     <div class="mode-card" onclick="showExamOptions()">
-                        <div class="mode-icon">�</div>
+                        <div class="mode-icon">💼</div>
                         <h3>Practice Exams</h3>
                         <p>Test your knowledge with comprehensive practice questions</p>
                         <ul>
@@ -302,9 +302,8 @@
             }
             // Get the buttons
             var studyGuideButton = document.querySelectorAll('.mode-card')[0];
-            var examOptionsButton = document.querySelectorAll('.mode-card')[1];
-
             var pdfStudyGuideButton = document.getElementById('pdf-study-guide-btn');
+            var examOptionsButton = document.querySelectorAll('.mode-card')[2];
 
             // PDF Study Guide button handler
             pdfStudyGuideButton.addEventListener('click', function() {
