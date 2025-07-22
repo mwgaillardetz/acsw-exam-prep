@@ -54,7 +54,7 @@
                 <h1>LCSW Study Guide</h1>
                 <p>Comprehensive study materials for all 4 exam domains</p>
                 <div class="study-guide-toggle">
-                    <button class="btn-secondary" onclick="toggleStudyGuideMode()">Toggle Review Questions</button>
+                    <!-- Removed review questions button -->
                     <span id="study-guide-mode-indicator">Standard Mode</span>
                 </div>
             </div>
@@ -90,7 +90,7 @@
             </div>
 
             <div class="objective-actions">
-                <button class="btn-secondary" id="practice-questions-btn">Practice Questions for This Domain</button>
+                <!-- Practice Questions for This Domain button removed -->
                 <button class="btn-secondary" id="back-to-home-btn">← Back to Home</button>
             </div>
         </div>
@@ -266,8 +266,6 @@
     </div>
 
     <script src="questions.js"></script>
-    <script src="study-guide.js"></script>
-    <script src="review-questions.js"></script>
     <script src="exam-functions.js"></script>
     <script src="script.js"></script>
     <script>
@@ -523,10 +521,7 @@
                     }
                 }
                 
-                // Practice questions button
-                if (event.target.id === 'practice-questions-btn') {
-                    alert('Practice questions functionality not implemented in this simplified version');
-                }
+                // Practice questions button handler removed; now handled by platform.startObjectiveExam()
                 
                 // Back to exam options button
                 if (event.target.id === 'back-to-exam-options-btn') {

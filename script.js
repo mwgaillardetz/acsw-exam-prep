@@ -50,7 +50,7 @@ class LCSWExamPlatform {
         
         // Make sure global variables are defined
         this.studyGuide = typeof studyGuide !== 'undefined' ? studyGuide : {};
-        this.reviewQuestions = typeof reviewQuestions !== 'undefined' ? reviewQuestions : null;
+        // ...removed reviewQuestions initialization...
         
         this.init();
     }
@@ -134,73 +134,69 @@ class LCSWExamPlatform {
             <h1>${objective.title}</h1>
         `;
 
-        // If in review questions mode and review questions are available, show them
-        if (this.useReviewMode && this.reviewQuestions && this.reviewQuestions[objectiveId]) {
-            this.showReviewQuestions(objectiveId);
-        } else {
-            // Otherwise show regular content
-            const content = document.getElementById('objective-content');
-            content.innerHTML = '';
+        // Also update the static button in the domain detail screen (if present)
+        const staticPracticeBtn = document.getElementById('practice-questions-btn');
+        // Remove static practice questions button if present
+        const staticPracticeBtn = document.getElementById('practice-questions-btn');
+        if (staticPracticeBtn) {
+            staticPracticeBtn.style.display = 'none';
+        }
+        const content = document.getElementById('objective-content');
+        content.innerHTML = '';
 
-            objective.content.forEach(item => {
-                const section = document.createElement('div');
-                section.className = 'content-section';
-                
-                // Format the details with better spacing and structure
-                let formattedDetails = item.details;
-                
-                // Replace semicolons with line breaks for better readability
-                formattedDetails = formattedDetails.replace(/; /g, ';<br><br>• ');
-                
-                // Add bullet points to lists
-                formattedDetails = formattedDetails.replace(/\. ([A-Z])/g, '.<br><br>• $1');
-                
-                // Add bullet point to the beginning if it doesn't start with one
-                if (!formattedDetails.startsWith('•')) {
-                    formattedDetails = '• ' + formattedDetails;
-                }
-                
-                section.innerHTML = `
-                    <h3>${item.topic}</h3>
-                    <div class="details-content">${formattedDetails}</div>
-                `;
-                content.appendChild(section);
-            });
-            
-            // Add bottom navigation
-            const bottomNav = document.createElement('div');
-            bottomNav.className = 'domain-navigation bottom-nav';
-            bottomNav.innerHTML = `
-                <button class="btn-nav" id="bottom-prev-domain-btn" onclick="platform.navigateToPreviousDomain()" 
-                        title="Previous Domain" aria-label="Navigate to previous domain">
-                    ← Previous Domain
-                </button>
-                <span class="domain-indicator" id="bottom-domain-indicator" aria-live="polite">Domain ${objectiveId} of ${Object.keys(this.studyGuide).length}</span>
-                <button class="btn-nav" id="bottom-next-domain-btn" onclick="platform.navigateToNextDomain()" 
-                        title="Next Domain" aria-label="Navigate to next domain">
-                    Next Domain →
-                </button>
+        objective.content.forEach(item => {
+            const section = document.createElement('div');
+            section.className = 'content-section';
+            // Format the details with better spacing and structure
+            let formattedDetails = item.details;
+            formattedDetails = formattedDetails.replace(/; /g, ';<br><br>• ');
+            formattedDetails = formattedDetails.replace(/\. ([A-Z])/g, '.<br><br>• $1');
+            if (!formattedDetails.startsWith('•')) {
+                formattedDetails = '• ' + formattedDetails;
+            }
+            section.innerHTML = `
+                <h3>${item.topic}</h3>
+                <div class="details-content">${formattedDetails}</div>
             `;
-            content.appendChild(bottomNav);
-            
-            // Update bottom navigation buttons
-            const bottomPrevBtn = document.getElementById('bottom-prev-domain-btn');
-            const bottomNextBtn = document.getElementById('bottom-next-domain-btn');
-            
-            if (objectiveId <= 1) {
-                bottomPrevBtn.disabled = true;
-            } else {
-                bottomPrevBtn.disabled = false;
-            }
-            
-            if (objectiveId >= Object.keys(this.studyGuide).length) {
-                bottomNextBtn.disabled = true;
-            } else {
-                bottomNextBtn.disabled = false;
-            }
+            content.appendChild(section);
+        });
+
+        // Add bottom navigation and practice button
+        const bottomNav = document.createElement('div');
+        bottomNav.className = 'domain-navigation bottom-nav';
+        bottomNav.innerHTML = `
+            <button class="btn-nav" id="bottom-prev-domain-btn" onclick="platform.navigateToPreviousDomain()" 
+                    title="Previous Domain" aria-label="Navigate to previous domain">
+                ← Previous Domain
+            </button>
+            <span class="domain-indicator" id="bottom-domain-indicator" aria-live="polite">Domain ${objectiveId} of ${Object.keys(this.studyGuide).length}</span>
+            <button class="btn-nav" id="bottom-next-domain-btn" onclick="platform.navigateToNextDomain()" 
+                    title="Next Domain" aria-label="Navigate to next domain">
+                Next Domain →
+            </button>
+            <button class="btn-secondary" id="bottom-practice-questions-btn">Practice Questions for This Domain</button>
+        `;
+
+        // Update bottom navigation buttons
+        const bottomPrevBtn = document.getElementById('bottom-prev-domain-btn');
+        const bottomNextBtn = document.getElementById('bottom-next-domain-btn');
+        const bottomPracticeBtn = document.getElementById('bottom-practice-questions-btn');
+
+        if (objectiveId <= 1) {
+            bottomPrevBtn.disabled = true;
+        } else {
+            bottomPrevBtn.disabled = false;
         }
 
-        // Update domain navigation
+        if (objectiveId >= Object.keys(this.studyGuide).length) {
+            bottomNextBtn.disabled = true;
+        } else {
+            bottomNextBtn.disabled = false;
+        }
+
+        // Practice Questions button handler
+        bottomPracticeBtn.onclick = () => {
+            this.startCategoryExam(objectiveId);
         this.updateDomainNavigation();
 
         // Add keyboard navigation
@@ -333,12 +329,28 @@ class LCSWExamPlatform {
             return;
         }
         
-        const questionsForObjective = examQuestions.filter(q => q.objective === objectiveId);
-        const availableQuestions = this.filterRecentQuestions(questionsForObjective);
+        const domainId = Number(objectiveId);
+        const questionsForObjective = examQuestions.filter(q => q.objective === domainId);
+        console.log('Domain selected:', objectiveId, 'Questions found:', questionsForObjective.length, questionsForObjective);
+        let availableQuestions = this.filterRecentQuestions(questionsForObjective);
+        if (availableQuestions.length === 0) {
+            console.warn('No available questions after filtering recent questions. Using all questions for this domain.');
+            availableQuestions = questionsForObjective;
+        }
         const shuffledQuestions = this.shuffleArray([...availableQuestions]);
         this.trackRecentQuestions(shuffledQuestions);
         this.setupExam(shuffledQuestions);
         this.timeRemaining = 0;
+        if (shuffledQuestions.length === 0) {
+            this.showScreen('exam-screen');
+            document.getElementById('questionText').textContent = 'No questions available for this domain.';
+            document.getElementById('optionsContainer').innerHTML = '';
+            document.getElementById('difficultyBadge').textContent = '';
+            document.getElementById('objectiveBadge').textContent = '';
+            document.getElementById('questionCounter').textContent = '';
+            document.getElementById('progressFill').style.width = '0%';
+            return;
+        }
         this.startExam();
     }
 
@@ -892,92 +904,9 @@ class LCSWExamPlatform {
         return filtered.length >= Math.min(10, questions.length * 0.5) ? filtered : questions;
     }
     
-    toggleStudyGuideMode() {
-        if (!this.reviewQuestions) {
-            console.log('Review questions not available');
-            return;
-        }
-        
-        this.useReviewMode = !this.useReviewMode;
-        
-        // Update the indicator
-        const indicator = document.getElementById('study-guide-mode-indicator');
-        if (indicator) {
-            indicator.textContent = this.useReviewMode ? 'Review Questions Mode' : 'Standard Mode';
-        }
-        
-        // Refresh the current view if on study guide screens
-        if (this.currentScreen === 'study-guide-screen') {
-            this.populateStudyGuide();
-        } else if (this.currentScreen === 'objective-detail-screen' && this.currentObjective) {
-            this.showObjectiveDetail(this.currentObjective);
-        }
-    }
+    // ...removed toggleStudyGuideMode and review questions code...
     
-    showReviewQuestions(domainId) {
-        if (!this.reviewQuestions || !this.reviewQuestions[domainId]) {
-            console.log('Review questions not available for this domain');
-            return;
-        }
-        
-        const domain = this.reviewQuestions[domainId];
-        const content = document.getElementById('objective-content');
-        content.innerHTML = '';
-        
-        const header = document.createElement('div');
-        header.className = 'content-section';
-        header.innerHTML = `
-            <h3>Review Questions and Answer Key</h3>
-        `;
-        content.appendChild(header);
-        
-        // Create a single text block with all questions and answers
-        const questionsText = document.createElement('div');
-        questionsText.className = 'details-content';
-        
-        let allQuestionsText = '';
-        
-        domain.questions.forEach((question, index) => {
-            allQuestionsText += `• ${index + 1}.\n\n`;
-            allQuestionsText += `• ${String.fromCharCode(65 + question.correctAnswer)}.\n\n`;
-            allQuestionsText += `• ${question.explanation}\n\n`;
-        });
-        
-        questionsText.innerText = allQuestionsText;
-        content.appendChild(questionsText);}}
-        
-        // Add bottom navigation for review questions too
-        const bottomNav = document.createElement('div');
-        bottomNav.className = 'domain-navigation bottom-nav';
-        bottomNav.innerHTML = `
-            <button class="btn-nav" id="bottom-prev-domain-btn" onclick="platform.navigateToPreviousDomain()" 
-                    title="Previous Domain" aria-label="Navigate to previous domain">
-                ← Previous Domain
-            </button>
-            <span class="domain-indicator" id="bottom-domain-indicator" aria-live="polite">Domain ${domainId} of ${Object.keys(this.studyGuide).length}</span>
-            <button class="btn-nav" id="bottom-next-domain-btn" onclick="platform.navigateToNextDomain()" 
-                    title="Next Domain" aria-label="Navigate to next domain">
-                Next Domain →
-            </button>
-        `;
-        content.appendChild(bottomNav);
-        
-        // Update bottom navigation buttons
-        const bottomPrevBtn = document.getElementById('bottom-prev-domain-btn');
-        const bottomNextBtn = document.getElementById('bottom-next-domain-btn');
-        
-        if (domainId <= 1) {
-            bottomPrevBtn.disabled = true;
-        } else {
-            bottomPrevBtn.disabled = false;
-        }
-        
-        if (domainId >= Object.keys(this.studyGuide).length) {
-            bottomNextBtn.disabled = true;
-        } else {
-            bottomNextBtn.disabled = false;
-        }
-    }
+    // ...removed orphaned bottomNav and navigation code...
     
     toggleAnswer(domainId, questionIndex) {
         const answerId = `answer-${domainId}-${questionIndex}`;
@@ -1000,11 +929,13 @@ class LCSWExamPlatform {
 }
 
 // Initialize the platform when the page loads
+
 let platform;
 document.addEventListener('DOMContentLoaded', () => {
     try {
         console.log('Initializing LCSW platform...');
         platform = new LCSWExamPlatform();
+        window.platform = platform; // Expose globally for onclick handlers
         console.log('Platform initialized successfully');
     } catch (error) {
         console.error('Failed to initialize platform:', error);

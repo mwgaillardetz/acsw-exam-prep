@@ -1118,7 +1118,7 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Review Questions Styles */
+/* Removed review questions styles */
 .review-question {
     background: var(--bg-card-elevated);
     border: 1px solid var(--border-color);

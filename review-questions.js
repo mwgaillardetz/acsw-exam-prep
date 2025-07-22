@@ -1,4 +1,4 @@
-// LCSW Review Questions and Answer Key
+// ...removed review questions and answer key...
 const reviewQuestions = {
     1: { // Domain I: Human Development, Diversity, and Behavior in the Environment
         questions: [
@@ -174,5 +174,6 @@ const reviewQuestions = {
 
 // Export the review questions
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { reviewQuestions };
+    // Removed export of reviewQuestions
+    module.exports = {};
 }
