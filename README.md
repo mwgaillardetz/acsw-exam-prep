@@ -2,7 +2,7 @@
 I made this so my sister could pass her exam. I hope it helps others, too!
 
 
-**Great for**: Individual study, team training, bootcamps, and certification preparation programs.
+**Great for**: Individual study and certification preparation programs.
 
 A comprehensive, modern practice platform for the Licensed Clinical Social Worker (LCSW) certification exam featuring an interactive study guide, multiple exam formats, advanced performance analytics, and full mobile responsiveness.
 
