@@ -7,20 +7,20 @@ I made this so my sister could pass her exam. I hope it helps others, too!
 A comprehensive, modern practice platform for the Licensed Clinical Social Worker (LCSW) certification exam featuring an interactive study guide, multiple exam formats, advanced performance analytics, and full mobile responsiveness.
 
 ## Features
-- **🧠 Interactive Study Guide**: Comprehensive study materials organized by all 4 certification domains
-- **💼 Multiple Exam Formats**:
+- ** Interactive Study Guide**: Comprehensive study materials organized by all 4 certification domains
+- ** Multiple Exam Formats**:
   - Full practice exam (170 questions, 4 hours)
   - Domain-based exams for focused study (per domain)
   - Domain-specific practice questions
-- **📊 Advanced Performance Analytics**:
+- ** Advanced Performance Analytics**:
   - Detailed breakdown by certification domains
   - Score tracking and improvement recommendations
   - Question review with detailed explanations
-- **🔄 Dynamic Question System**: 40+ randomized questions from comprehensive question bank
-- **🌙 Dark/Light Theme Toggle**: Modern theme switching with persistent preferences
-- **📱 Fully Mobile Responsive**: Optimized for all devices (iPhone, Android, tablets, desktop)
-- **⚡ Zero Dependencies**: Lightweight, fast-loading vanilla JavaScript application
-- **🐳 Simplified Docker Setup**: Easy containerized deployment without complex orchestration
+- ** Dynamic Question System**: 40+ randomized questions from comprehensive question bank
+- ** Dark/Light Theme Toggle**: Modern theme switching with persistent preferences
+- ** Fully Mobile Responsive**: Optimized for all devices (iPhone, Android, tablets, desktop)
+- ** Zero Dependencies**: Lightweight, fast-loading vanilla JavaScript application
+- ** Simplified Docker Setup**: Easy containerized deployment without complex orchestration
 
 ### Study Guide Coverage (All 4 Domains)
 
@@ -49,23 +49,7 @@ xdg-open index.html
 start index.html
 ```
 
-### Option 2: Local Development Server
-
-```bash
-# Using Python (recommended for development)
-python3 -m http.server 8000
-# Then open: http://localhost:8000
-
-# Using Node.js (if you have it installed)
-npx http-server -p 8000
-# Then open: http://localhost:8000
-
-# Using PHP (if available)
-php -S localhost:8000
-# Then open: http://localhost:8000
-```
-
-### Option 3: Docker
+### Option 2: Docker
 
 ```bash
 # Start with Docker Compose
